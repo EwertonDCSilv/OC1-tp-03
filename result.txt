@@ -1,0 +1,4 @@
+Deu bom
+numberAddresses: 5
+typeOperator: 1
+data: 101
