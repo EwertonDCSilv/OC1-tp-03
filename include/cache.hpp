@@ -9,7 +9,12 @@ protected:
     int blocks;
     int words;
     int sizeWords;
-    std::map<int,int> data;
+    //std::map<int,int> data;
+    char ***data;
+    int *tag;
+	int *index;
+	int *validity;
+	int *dirty;
 
 public:
     DataCache(int blocks, int words, int sizeWords);
