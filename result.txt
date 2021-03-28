@@ -1,4 +1,37 @@
-Deu bom
+blocks: 4096
+sizeWords: 64
+----------------------------------------
+blocks: 256
+words: 4
+sizeWords: 64
+----------------------------------------
+values[2]: 00000000000000000000000000000101
 numberAddresses: 5
+bitAddresses: 00000000000000000000000000000101
 typeOperator: 1
-data: 101
+data: 5
+----------------------------------------
+numberAddresses: 5
+bitAddresses: 00000000000000000000000000000101
+typeOperator: 0
+data: 0
+----------------------------------------
+values[2]: 00000000000000000000000000010010
+numberAddresses: 12
+bitAddresses: 00000000000000000000000000001100
+typeOperator: 1
+data: 18
+----------------------------------------
+numberAddresses: 25
+bitAddresses: 00000000000000000000000000011001
+typeOperator: 0
+data: 0
+----------------------------------------
+READS: 2
+WRITES: 2
+HITS: 0
+MISSES: 0
+HIT RATE:0
+MISS RATE:0
+
+25 0 
