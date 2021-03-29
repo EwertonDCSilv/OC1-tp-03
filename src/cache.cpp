@@ -113,7 +113,7 @@ std::string DataCache::read(int address){
     tag        =  getTagBlock(address);
     offset     =  getOffset(address);
 
-    if( this->tag[offset] == tag && this->validity[offset] == 1){
+    if( this->tag[indexBlock] == tag && this->validity[indexBlock] == 1){
         // Retornando dado da cache
         result = std::string(this->data[indexBlock][offset]);
     }

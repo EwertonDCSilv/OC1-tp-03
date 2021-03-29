@@ -98,7 +98,7 @@ int main(){
         }
         
         // Concatenando resultado em vector
-        rowResult = std::to_string(numberAddresses) + " " + std::to_string(typeOperator) + dataInput + " " + typeResult;
+        rowResult = std::to_string(numberAddresses) + " " + std::to_string(typeOperator)+ " " + dataInput + " " + typeResult;
         results.push_back(rowResult);
 
         // Redefinindo valor das variaveis
