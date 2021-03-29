@@ -121,18 +121,20 @@ int main(){
     // Definindo precisao para float
     std::cout << std::setprecision(1);
 
-    // Imprimindo valores da simulacao
-    for (auto result: results)
-        std::cout << result << std::endl;
     
     // Imprimindo contagens da simulacao
-    std::cout << ""                                        << std::endl;
     std::cout << "READS: "    << numberReads               << std::endl;
     std::cout << "WRITES: "   << numberWrites              << std::endl;
     std::cout << "HITS: "     << numberHits                << std::endl;
     std::cout << "MISSES: "   << numberMisses              << std::endl;
-    std::cout << "HIT RATE:"  << numberHits/numberReads    << std::endl;
-    std::cout << "MISS RATE:" << numberMisses/numberWrites << std::endl;
+    std::cout << "HIT RATE: "  << numberHits/numberReads    << std::endl;
+    std::cout << "MISS RATE: " << numberMisses/numberWrites << std::endl;
+    std::cout << std::endl;
+
+    // Imprimindo valores da simulacao
+    for (auto result: results)
+        std::cout << result << std::endl;
     
+
     return 0;
 }   
