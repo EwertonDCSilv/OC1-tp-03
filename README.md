@@ -58,15 +58,15 @@ make test
 
 ## Sobre o trabalho
 Esse trabalho consiste na implementação de uma pequena hierarquia de memória. Nessa hierarquia, existe uma CPU que irá realizar operações de leitura e escrita em um subsistema de memória. Esse subsistema consiste em uma pequena memória cache e uma memória de dados.
-A CPU pode disparar operações de escrita e leitura na memória. Operações de leitura enviam um endereço que desejam cessar, esse endereço ´e passado para a cache que retorna o dado caso um hit ocorra, ou busca um bloco na memória de dados caso um miss ocorra.
+A CPU pode disparar operações de escrita e leitura na memória. Operações de leitura enviam um endereço que desejam cessar, esse endereço é passado para a cache que retorna o dado caso um hit ocorra, ou busca um bloco na memória de dados caso um miss ocorra.
 Nas operações de escrita, recebe-se um endereço e um dado, primeiro atualiza-se o bloco correspondente
-`aquele endereço na cache e marca-se tal bloco como "sujo".  Quando surge a necessidade de substituir um bloco já marcado como "sujo" por um novo valor na cache, temos que primeiro atualizar o valor na memória de dados com os dados do bloco "sujo", e depois atualizamos a cache com os dados do novo bloco.
+àquele endereço na cache e marca-se tal bloco como "sujo".  Quando surge a necessidade de substituir um bloco já marcado como "sujo" por um novo valor na cache, temos que primeiro atualizar o valor na memória de dados com os dados do bloco "sujo", e depois atualizamos a cache com os dados do novo bloco.
 Para implementar tal sistema, faca as seguintes considerações:
 - Sua memória de dados consegue armazenar 4096 palavras de 32 bits.
 
 - Sua cache tem a capacidade de armazenar 256 blocos.  Cada bloco da cache contém 16 bytes, que correspondem a 4 palavras de 32 bits, que resultam em 128 bits no total.
 - Sua cache utiliza Mapeamento Direto para alocar os blocos.
-- Para operações de escrita na memória você deve utilizar a t´cénica de Frite Bach.
+- Para operações de escrita na memória você deve utilizar a técnica de Frite Bach.
 - Os endereços que a CPU fornece contém 12 bits (4096 = 2^12).
 
 Para que seja possível testar o seu sistema, o seu programa deve ser capaz de ler um arquivo em que cada linha representa uma requisição da CPU, contendo as seguintes informações:
