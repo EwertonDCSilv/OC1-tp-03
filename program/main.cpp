@@ -121,7 +121,6 @@ int main(){
     // Definindo precisao para float
     std::cout << std::setprecision(1);
 
-    
     // Imprimindo contagens da simulacao
     std::cout << "READS: "    << numberReads               << std::endl;
     std::cout << "WRITES: "   << numberWrites              << std::endl;
@@ -135,6 +134,5 @@ int main(){
     for (auto result: results)
         std::cout << result << std::endl;
     
-
     return 0;
 }   

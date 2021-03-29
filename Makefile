@@ -32,4 +32,3 @@ clean:
 
 test: main
 	$(BINDIR)/main 	< ./test/input/01.in > result.txt
-	diff  result.txt ./test/output/01.out
