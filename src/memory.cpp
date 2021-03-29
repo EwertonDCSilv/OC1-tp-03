@@ -21,13 +21,13 @@ Memory::Memory(int blocks, int sizeWords){
 }
 
 void Memory::showValues(int address = -1){
+    int indexMemoryData = 0;
+    
     std::cout << "blocks: "    << this->blocks << std::endl;
     std::cout << "sizeWords: " << this->sizeWords << std::endl;
     std::cout << "realSize: " << this->realSize << std::endl;
 
     if (address != -1){
-        int indexMemoryData = 0;
-
         indexMemoryData =  getIndexData(address);
         std::cout << "index memory: " << indexMemoryData << std::endl;
         std::cout << "data: "         << this->data[indexMemoryData] << std::endl;

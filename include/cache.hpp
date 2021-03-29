@@ -1,9 +1,8 @@
 #include <string>
-#include <string.h>
+#include <cmath>
 #include <sstream>
 #include <cmath>
 #include <vector>
-#include <map>
 #include <iostream>
 #include "memory.hpp"
 

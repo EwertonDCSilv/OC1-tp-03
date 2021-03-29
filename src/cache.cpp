@@ -44,6 +44,8 @@ DataCache::DataCache(int blocks, int blockSize, int words, int sizeWords){
 }
 
 void DataCache::showValues(int address = -1){
+    int offset = 0;
+
     std::cout << "blocks: "    << this->blocks << std::endl;
     std::cout << "words: "     << this->words << std::endl;
     std::cout << "sizeWords: " << this->sizeWords << std::endl;
@@ -51,12 +53,8 @@ void DataCache::showValues(int address = -1){
     std::cout << "index: "     << this->shiftIndex << std::endl;
     std::cout << "tag: "       << this->shiftTag << std::endl;
 
-
     if (address != -1){
-        int offset = 0;
-
         offset     =  getOffset(address);
-        
         std::cout << "indexoffset: " << offset << std::endl;
         std::cout << "data: "        << this->data[offset] << std::endl;
         std::cout << "tag: "         << this->tag[offset] << std::endl;
@@ -64,22 +62,15 @@ void DataCache::showValues(int address = -1){
         std::cout << "validity: "    << this->validity[offset] << std::endl;
         std::cout << "modified: "    << this->modified[offset] << std::endl;
     }
-
     std::cout << "----------------------------------------"<< std::endl;
-
 }
 
 int DataCache::getOffset(int address){
-    return address & (this->blockSize - 1);
+    return address % this->words;
 }
 
 int DataCache::getIndexBlock(int address){
-    
-    int mask  = 0;
-
-    mask     = (1 << this->shiftIndex) - 1;
-    address  = address >> this->shiftOffset;
-    return address & mask;
+    return int(floor(address/16.0)) % this->blocks;
 }
 
 int DataCache::getTagBlock(int address){
@@ -98,20 +89,14 @@ bool DataCache::write(Memory memory, int address, std::string data){
     tag        =  getTagBlock(address);
     offset     =  getOffset(address);
 
-    std::cout << "Calculado indexBlock: "    << indexBlock << std::endl;
-    std::cout << "Calculado tag: "           << tag << std::endl;
-    std::cout << "Calculado offset: "        << offset << std::endl;
-    std::cout << "¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨\n: " << std::endl;
-
-
-    if( this->tag[offset] == tag && this->validity[offset] == 1){
+    if( this->tag[indexBlock] == tag && this->validity[indexBlock] == 1){
         // Salvando na memoria
         indexMemoryData = memory.getIndexData(address);
         memory.write(indexMemoryData, data);
-        this->modified[offset] = 1;
+        this->modified[indexBlock] = 1;
 
         // Salvando na cache
-        strcpy(this->data[offset][0], data.c_str());
+        strcpy(this->data[indexBlock][offset], data.c_str());
         return true;
     }
     return false;
@@ -119,19 +104,18 @@ bool DataCache::write(Memory memory, int address, std::string data){
 
 std::string DataCache::read(int address){
     
-    int tag = 0;
-    //int indexBlock = 0;
-    int offset = 0;
+    int tag            = 0;
+    int indexBlock     = 0;
+    int offset         = 0;
     std::string result = "-1";
 
-    //indexBlock =  getIndexBlock(address);
+    indexBlock =  getIndexBlock(address);
     tag        =  getTagBlock(address);
     offset     =  getOffset(address);
 
     if( this->tag[offset] == tag && this->validity[offset] == 1){
         // Retornando dado da cache
-        std::cout << "Leitura da cache: " << this->data[offset][0] << std::endl;
-        result = std::string(this->data[offset][0]);
+        result = std::string(this->data[indexBlock][offset]);
     }
     return result;
 }
@@ -139,20 +123,18 @@ std::string DataCache::read(int address){
 void DataCache::loadMemory(int address){
    
     int tag = 0;
-    int offset = 0;
+    int indexBlock = 0;
 
-    //indexBlock =  getIndexBlock(address);  //Obtendo valor do indece do bloco de memoria
+    indexBlock =  getIndexBlock(address);  //Obtendo valor do indece do bloco de memoria
     tag        =  getTagBlock(address); //Obtendo valor da tag do bloco de memoria
-    offset     =  getOffset(address);
     
-    this->modified[offset] = 0;
-    this->validity[offset] = 1;
-    this->tag[offset] = tag;
+    this->modified[indexBlock] = 0;
+    this->validity[indexBlock] = 1;
+    this->tag[indexBlock] = tag;
 }
 
 DataCache::~DataCache(){
-    //delete this->data;
-    /*delete[] this->tag;
+    delete[] this->tag;
     delete[] this->index;
     delete[] this->validity;
     delete[] this->modified;
@@ -163,6 +145,6 @@ DataCache::~DataCache(){
         }
         delete [] this->data[i];
     }
-    delete [] this->data;*/
+    delete [] this->data;
 
 }
