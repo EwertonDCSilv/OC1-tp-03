@@ -6,11 +6,12 @@
 **Nome**:Matheus Dias; **Matricula**:2019054862
 
 ## Como executar
----
 Para compilar e executar um teste bis bash:
-``` bash
-make
+``` 
+./execute.sh 
 ```
+Na opção via bash pode ser necessário realizar: chmod +x ./execute.sh para tornar executável.\
+
 Para realizar apenas a compilação basta executar a instrução:
 ``` bash
 make
@@ -56,7 +57,6 @@ make test
 ```
 
 ## Sobre o trabalho
----
 Esse trabalho consiste na implementação de uma pequena hierarquia de memória. Nessa hierarquia, existe uma CPU que irá realizar operações de leitura e escrita em um subsistema de memória. Esse subsistema consiste em uma pequena memória cache e uma memória de dados.
 A CPU pode disparar operações de escrita e leitura na memória. Operações de leitura enviam um endereço que desejam cessar, esse endereço ´e passado para a cache que retorna o dado caso um hit ocorra, ou busca um bloco na memória de dados caso um miss ocorra.
 Nas operações de escrita, recebe-se um endereço e um dado, primeiro atualiza-se o bloco correspondente
@@ -67,9 +67,9 @@ Para implementar tal sistema, faca as seguintes considerações:
 - Sua cache tem a capacidade de armazenar 256 blocos.  Cada bloco da cache contém 16 bytes, que correspondem a 4 palavras de 32 bits, que resultam em 128 bits no total.
 - Sua cache utiliza Mapeamento Direto para alocar os blocos.
 - Para operações de escrita na memória você deve utilizar a t´cénica de Frite Bach.
-- Os endereços que a CPU fornece contém 12 bits (4096 = 212).
+- Os endereços que a CPU fornece contém 12 bits (4096 = 2^12).
 
 Para que seja possível testar o seu sistema, o seu programa deve ser capaz de ler um arquivo em que cada linha representa uma requisição da CPU, contendo as seguintes informações:
-- Endereço N para acesso `a memória. (0 <= N <= 212)
+- Endereço N para acesso `a memória. (0 <= N <= 2^12)
 - Tipo da operação: 0 para leitura, 1 para escrita
 - Dado para operação de escrita. Um dado contendo 32 bits a ser escrito na memória
