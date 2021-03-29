@@ -30,7 +30,7 @@ int main(){
     std::vector<std::string> results;  // Vector para facilitar recebimento das entradas
     std::string inputLine;             // String temporaria para receber entrada
     std::string bitAddresses;          // Numero do endereço binario
-    std::string rowResult = "";        // Numero do endereço binario
+    std::string rowResult  = "";       // Numero do endereço binario
     std::string typeResult = "";       // Numero do endereço binario
     
     bool boolWritter;
@@ -65,9 +65,13 @@ int main(){
 
             // Verificando write back
             if(boolWritter == false){
-                cache.loadMemory(numberAddresses);
+                cache.activeCache(numberAddresses);
                 boolWritter = cache.write(memory, numberAddresses, dataInput);
             }             
+
+            // Concatenando string de saida pra leitura
+            rowResult = std::to_string(numberAddresses) + " " + std::to_string(typeOperator)+ " " + dataInput + " " + typeResult;
+
         }else{
             // Incrementando contador de leitura
             numberReads++;
@@ -87,7 +91,7 @@ int main(){
                 dataRead = memory.read(numberAddresses);
 
                 // Inserindo dado ausente na cache
-                cache.loadMemory(numberAddresses);
+                cache.activeCache(numberAddresses);
                 boolWritter = cache.write(memory, numberAddresses, dataRead);
             }else{
                 // Incrementado contador de hits
@@ -96,10 +100,11 @@ int main(){
                 // Definindo tipo de resultado
                 typeResult = "HIT";
             }
+            // Concatenando string de saida pra leitura
+            rowResult = std::to_string(numberAddresses) + " " + std::to_string(typeOperator)+ " " + typeResult;
         }
         
         // Concatenando resultado em vector
-        rowResult = std::to_string(numberAddresses) + " " + std::to_string(typeOperator)+ " " + dataInput + " " + typeResult;
         results.push_back(rowResult);
 
         // Redefinindo valor das variaveis

@@ -1,27 +1,30 @@
 #include "cache.hpp"
 
+/*
+*  @Method: Construtor da classe DataCache
+*  @params: int blocks:    numero de blocos cache
+*  @params: int blockSize: tamaho do bloco em bytes
+*  @params: int words:     numero de palavras em cada bloco
+*  @params: int sizeWords: comprimento das palavras
+*/
 DataCache::DataCache(int blocks, int blockSize, int words, int sizeWords){
-    
-    // Valor deafult de inicializacao
-    std::string defaultValue = "00000000000000000000000000000000";
-
+    // Definindo valores padrao
     this->blocks    = blocks;
     this->blockSize = blockSize;
     this->words     = words;
     this->sizeWords = sizeWords+1;
 
     // Alocando memoria metadados da cache
-    this->tag       = new int[this->blocks];
-    this->index     = new int[this->blocks];
-    this->validity  = new int[this->blocks];
-    this->modified  = new int[this->blocks];
+    this->index     = new int [this->blocks];
+    this->validity  = new int [this->blocks];
+    this->modified  = new int [this->blocks];
+    this->tag       = new int*[this->blocks];
 
-    // Alocando memoria para dados da cache 3d-matrix
+    // Alocando memoria para dados da cache 2d e 3d-matrix
     this->data      = new char**[this->blocks];
     for(int i = 0; i < this->blocks; i++){
-
         // Limapndo memoria
-        this->tag[i]      = 0;
+        this->tag[i]      = new  int[this->words];
         this->index[i]    = 0;
         this->validity[i] = 0;
         this->modified[i] = 0;
@@ -29,10 +32,12 @@ DataCache::DataCache(int blocks, int blockSize, int words, int sizeWords){
         this->data[i] = new char*[this->words];
         for(int j = 0; j < this->words; j++){
             this->data[i][j] = new char[this->sizeWords+1];
-            for(int k = 0; k < this->sizeWords; k++){
+            
+            // Limapndo memoria
+            for(int k = 0; k < this->sizeWords; k++)
                 this->data[i][j][k] = '0';
-            }
             this->data[i][j][this->sizeWords] = '\0';
+            this->tag[i][j] = 0;
         }
     }
     
@@ -40,9 +45,12 @@ DataCache::DataCache(int blocks, int blockSize, int words, int sizeWords){
     this->shiftOffset = log2(this->blockSize);
     this->shiftIndex  = log2(this->blocks);
     this->shiftTag    = this->blockSize - (this->shiftOffset + this->shiftIndex);
-
 }
 
+/*
+*  @Method: Funcao que imprime valores de um endereco
+*  @params: int address:    numero do endereco de memoria
+*/
 void DataCache::showValues(int address = -1){
     int offset = 0;
 
@@ -65,31 +73,40 @@ void DataCache::showValues(int address = -1){
     std::cout << "----------------------------------------"<< std::endl;
 }
 
+/*
+*  @Method: Funcao retorna o offeset do endereco
+*  @params: int address:    numero do endereco de memoria
+*/
 int DataCache::getOffset(int address){
     return address % this->words;
 }
 
+/*
+*  @Method: Funcao retorna o indice do bloco da cache
+*  @params: int address:    numero do endereco de memoria
+*/
 int DataCache::getIndexBlock(int address){
-    return int(floor(address/16.0)) % this->blocks;
+    return address % this->blocks;
 }
 
-int DataCache::getTagBlock(int address){
-    address = address >> this->shiftOffset;
-    return address >> this->shiftIndex;
-}
-
+/*
+*  @Method: Funcao de escrita na memoria cache
+*  @params: Memory memory   :    Objeto da classe memoria
+*  @params: int address     :    numero do endereco de memoria
+*  @params: std::string data:    string contendo dado de escrita
+*/
 bool DataCache::write(Memory memory, int address, std::string data){
     
-    int tag = 0;
-    int indexBlock = 0;
+    int indexBlock      = 0;
     int indexMemoryData = 0;
-    int offset = 0;
+    int offset          = 0;
 
+    // Obtendo valores de indice e offset
     indexBlock =  getIndexBlock(address);
-    tag        =  getTagBlock(address);
     offset     =  getOffset(address);
 
-    if( this->tag[indexBlock] == tag && this->validity[indexBlock] == 1){
+    // Verificando se dado esta na cache
+    if( this->tag[indexBlock][offset] == address && this->validity[indexBlock] == 1){
         // Salvando na memoria
         indexMemoryData = memory.getIndexData(address);
         memory.write(indexMemoryData, data);
@@ -102,49 +119,67 @@ bool DataCache::write(Memory memory, int address, std::string data){
     return false;
 }
 
+/*
+*  @Method: Funcao de leitura na memoria cache
+*  @params: int address     :    numero do endereco de memoria
+*/
 std::string DataCache::read(int address){
     
-    int tag            = 0;
-    int indexBlock     = 0;
-    int offset         = 0;
-    std::string result = "-1";
+    int indexBlock     =    0;
+    int offset         =    0;
+    std::string result = "-1";// Valor padrao de retorno
 
+    // Obtendo valores de incide e offset
     indexBlock =  getIndexBlock(address);
-    tag        =  getTagBlock(address);
     offset     =  getOffset(address);
 
-    if( this->tag[indexBlock] == tag && this->validity[indexBlock] == 1){
+    // Verifica se dado existe na memoria cache
+    if( this->tag[indexBlock][offset] == address && this->validity[indexBlock] == 1){
         // Retornando dado da cache
         result = std::string(this->data[indexBlock][offset]);
     }
     return result;
 }
 
-void DataCache::loadMemory(int address){
-   
-    int tag = 0;
-    int indexBlock = 0;
-
-    indexBlock =  getIndexBlock(address);  //Obtendo valor do indece do bloco de memoria
-    tag        =  getTagBlock(address); //Obtendo valor da tag do bloco de memoria
+/*
+*  @Method: Funcao de ativação de bloco da cache
+*  @params: int address : numero do endereco de memoria
+*/
+void DataCache::activeCache(int address){
     
-    this->modified[indexBlock] = 0;
-    this->validity[indexBlock] = 1;
-    this->tag[indexBlock] = tag;
+    int indexBlock = 0;
+    int offset = 0;
+    
+    // Obtendo valores de incide e offset
+    indexBlock =  getIndexBlock(address);  //Obtendo valor do indece do bloco de memoria
+    offset     =  getOffset(address);  //Obtendo valor do indece do bloco de memoria
+    
+    // Definindo valores dos metados da cache
+    this->modified[indexBlock]    = 0;
+    this->validity[indexBlock]    = 1;
+    this->tag[indexBlock][offset] = address;
 }
 
+/*
+*  @Method: Destrutor da classe DataCache
+*/
 DataCache::~DataCache(){
-    delete[] this->tag;
+    // Destruindo 1d-matrix
     delete[] this->index;
     delete[] this->validity;
     delete[] this->modified;
 
     for(int i = 0; i < blocks; i++){
+        // Destruindo 3d-matrix
         for(int j = 0; j < words; j++){
             delete [] this->data[i][j];
         }
+        // Destruindo 2d-matrix
         delete [] this->data[i];
+        delete[] this->tag[i];
     }
+    
+    // Destruindo 1d-matrix
+    delete[] this->tag;
     delete [] this->data;
-
 }

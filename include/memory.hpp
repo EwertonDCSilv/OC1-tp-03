@@ -10,7 +10,6 @@ protected:
     int sizeWords;
     int realSize;
     char **data; 
-
 public:
     Memory(int blocks, int sizeWords);
     ~Memory();

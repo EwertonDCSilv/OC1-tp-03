@@ -16,11 +16,10 @@ protected:
     int shiftIndex;
     int shiftTag;
     char ***data;
-    int *tag;
+    int **tag;
 	int *index;
 	int *validity;
 	int *modified;
-
 public:
     DataCache(int blocks, int blockSize, int words, int sizeWords);
     ~DataCache();
@@ -30,5 +29,5 @@ public:
     int getTagBlock(int address);
     bool write(Memory memory, int address, std::string data);
     std::string read(int address);
-    void loadMemory(int address);
+    void activeCache(int address);
 };
