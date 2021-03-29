@@ -1,4 +1,5 @@
 #include <iostream>
+#include <iomanip>
 #include <bitset>
 #include "utility.hpp"
 #include "cache.hpp"
@@ -111,6 +112,9 @@ int main(){
         boolWritter     = false;
         values.clear();
     }
+
+    // Definindo precisao para float
+    std::cout << std::setprecision(1);
 
     // Imprimindo valores da simulacao
     for (auto result: results)

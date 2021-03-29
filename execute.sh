@@ -5,6 +5,7 @@ echo ''
 echo ''
 
 make
+echo "./bin/main < input.txt > result.txt"
 ./bin/main < input.txt > result.txt
 
 echo ''
