@@ -17,5 +17,6 @@ public:
     ~Memory();
     void showValues(int address);
     void write(int indexMemoryData, std::string data);
+    std::string read(int address);
     int getIndexData(int address);
 };

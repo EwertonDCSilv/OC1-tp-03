@@ -28,7 +28,8 @@ public:
     void showValues(int address);
     int getOffset(int address);
     int getIndexBlock(int address);
-    int getTagBlock(int indexBlock);
+    int getTagBlock(int address);
     bool write(Memory memory, int address, std::string data);
+    std::string read(int address);
     void loadMemory(int address);
 };

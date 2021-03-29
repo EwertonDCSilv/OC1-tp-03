@@ -1,20 +1,24 @@
 #include "cache.hpp"
 
 DataCache::DataCache(int blocks, int blockSize, int words, int sizeWords){
+    
+    // Valor deafult de inicializacao
+    std::string defaultValue = "00000000000000000000000000000000";
+
     this->blocks    = blocks;
     this->blockSize = blockSize;
     this->words     = words;
-    this->sizeWords = sizeWords;
+    this->sizeWords = sizeWords+1;
 
     // Alocando memoria metadados da cache
-    this->tag       = new int[blocks];
-    this->index     = new int[blocks];
-    this->validity  = new int[blocks];
-    this->modified  = new int[blocks];
+    this->tag       = new int[this->blocks];
+    this->index     = new int[this->blocks];
+    this->validity  = new int[this->blocks];
+    this->modified  = new int[this->blocks];
 
     // Alocando memoria para dados da cache 3d-matrix
-    this->data      = new char**[blocks];
-    for(int i = 0; i < blocks; i++){
+    this->data      = new char**[this->blocks];
+    for(int i = 0; i < this->blocks; i++){
 
         // Limapndo memoria
         this->tag[i]      = 0;
@@ -22,9 +26,13 @@ DataCache::DataCache(int blocks, int blockSize, int words, int sizeWords){
         this->validity[i] = 0;
         this->modified[i] = 0;
 
-        this->data[i] = new char*[words];
-        for(int j = 0; j < words; j++){
-            this->data[i][j] = new char[sizeWords];
+        this->data[i] = new char*[this->words];
+        for(int j = 0; j < this->words; j++){
+            this->data[i][j] = new char[this->sizeWords+1];
+            for(int k = 0; k < this->sizeWords; k++){
+                this->data[i][j][k] = '0';
+            }
+            this->data[i][j][this->sizeWords] = '\0';
         }
     }
     
@@ -45,20 +53,16 @@ void DataCache::showValues(int address = -1){
 
 
     if (address != -1){
-        int tag = 0;
-        int indexBlock = 0;
         int offset = 0;
 
-        indexBlock =  getIndexBlock(address);
-        offset     =  getOffset(indexBlock);
+        offset     =  getOffset(address);
         
-        std::cout << "indexBlock: " << indexBlock << std::endl;
-        std::cout << "offset: "     << offset << std::endl;
-        std::cout << "data: "       << this->data[indexBlock][offset] << std::endl;
-        std::cout << "tag: "        << this->tag[indexBlock] << std::endl;
-        std::cout << "index: "      << this->index[indexBlock] << std::endl;
-        std::cout << "validity: "   << this->validity[indexBlock] << std::endl;
-        std::cout << "modified: "   << this->modified[indexBlock] << std::endl;
+        std::cout << "indexoffset: " << offset << std::endl;
+        std::cout << "data: "        << this->data[offset] << std::endl;
+        std::cout << "tag: "         << this->tag[offset] << std::endl;
+        std::cout << "index: "       << this->index[offset] << std::endl;
+        std::cout << "validity: "    << this->validity[offset] << std::endl;
+        std::cout << "modified: "    << this->modified[offset] << std::endl;
     }
 
     std::cout << "----------------------------------------"<< std::endl;
@@ -70,11 +74,17 @@ int DataCache::getOffset(int address){
 }
 
 int DataCache::getIndexBlock(int address){
-    return address >> this->shiftOffset;
+    
+    int mask  = 0;
+
+    mask     = (1 << this->shiftIndex) - 1;
+    address  = address >> this->shiftOffset;
+    return address & mask;
 }
 
-int DataCache::getTagBlock(int indexBlock){
-    return indexBlock >> this->shiftIndex;
+int DataCache::getTagBlock(int address){
+    address = address >> this->shiftOffset;
+    return address >> this->shiftIndex;
 }
 
 bool DataCache::write(Memory memory, int address, std::string data){
@@ -85,56 +95,74 @@ bool DataCache::write(Memory memory, int address, std::string data){
     int offset = 0;
 
     indexBlock =  getIndexBlock(address);
-    tag        =  getTagBlock(indexBlock);
-    offset     =  getOffset(indexBlock);
+    tag        =  getTagBlock(address);
+    offset     =  getOffset(address);
 
-    if( this->tag[indexBlock] == tag && this->validity[indexBlock] == 1){
+    std::cout << "Calculado indexBlock: "    << indexBlock << std::endl;
+    std::cout << "Calculado tag: "           << tag << std::endl;
+    std::cout << "Calculado offset: "        << offset << std::endl;
+    std::cout << "¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨\n: " << std::endl;
+
+
+    if( this->tag[offset] == tag && this->validity[offset] == 1){
         // Salvando na memoria
         indexMemoryData = memory.getIndexData(address);
         memory.write(indexMemoryData, data);
-        this->modified[indexBlock] = 1;
+        this->modified[offset] = 1;
 
         // Salvando na cache
-        strcpy(this->data[indexBlock][offset], data.c_str());
+        strcpy(this->data[offset][0], data.c_str());
         return true;
     }
     return false;
 }
 
+std::string DataCache::read(int address){
+    
+    int tag = 0;
+    //int indexBlock = 0;
+    int offset = 0;
+    std::string result = "-1";
+
+    //indexBlock =  getIndexBlock(address);
+    tag        =  getTagBlock(address);
+    offset     =  getOffset(address);
+
+    if( this->tag[offset] == tag && this->validity[offset] == 1){
+        // Retornando dado da cache
+        std::cout << "Leitura da cache: " << this->data[offset][0] << std::endl;
+        result = std::string(this->data[offset][0]);
+    }
+    return result;
+}
+
 void DataCache::loadMemory(int address){
    
     int tag = 0;
-    int indexBlock = 0;
+    int offset = 0;
 
-    indexBlock =  getIndexBlock(address);  //Obtendo valor do indece do bloco de memoria
-    tag        =  getTagBlock(indexBlock); //Obtendo valor da tag do bloco de memoria
+    //indexBlock =  getIndexBlock(address);  //Obtendo valor do indece do bloco de memoria
+    tag        =  getTagBlock(address); //Obtendo valor da tag do bloco de memoria
+    offset     =  getOffset(address);
     
-    this->modified[indexBlock] = 0;
-    this->validity[indexBlock] = 1;
-    this->tag[indexBlock] = tag;
+    this->modified[offset] = 0;
+    this->validity[offset] = 1;
+    this->tag[offset] = tag;
 }
 
 DataCache::~DataCache(){
     //delete this->data;
-    delete[] this->tag;
+    /*delete[] this->tag;
     delete[] this->index;
     delete[] this->validity;
     delete[] this->modified;
 
-    /*
-        this->data      = new char**[blocks];
     for(int i = 0; i < blocks; i++){
-
-        // Limapndo memoria
-        this->tag[i]      = 0;
-        this->index[i]    = 0;
-        this->validity[i] = 0;
-        this->modified[i] = 0;
-
-        this->data[i] = new char*[words];
         for(int j = 0; j < words; j++){
-            this->data[i][j] = new char[sizeWords];
+            delete [] this->data[i][j];
         }
+        delete [] this->data[i];
     }
-    */
+    delete [] this->data;*/
+
 }
