@@ -50,10 +50,11 @@ make test
 |   +-- output
 |   |   +-- 00.out    // Arquivo de saida do primeiro caso  
 |   |   +-- 01.out    // Arquivo de saida do segundo caso
++-- Makefile          // Makefile do projeto
 +-- README.md
-+-- Makefile.ipynb    // Makefile do projeto
-+-- execute.sh        // Script bash para execução simplificada
++-- diffTest.py       // Script em python para chegar o resultado
 +-- alunos.txt        // Alunos responsaveis pelo trabalho
++-- execute.sh        // Script bash para execução simplificada
 ```
 
 ## Sobre o trabalho

@@ -8,12 +8,13 @@
 #define CACHE_BLOCKS 256    // 
 #define WORDS 4             // 
 #define SIZEWORDS 32        // 
+#define SIZEBLOCK 16        // 
 
 int main(){
 
     // Variaveis de memoria
     Memory memory = Memory(MEMORY_BLOCKS, SIZEWORDS);
-    DataCache cache = DataCache(CACHE_BLOCKS,16, WORDS, SIZEWORDS);
+    DataCache cache = DataCache(CACHE_BLOCKS, SIZEBLOCK, WORDS, SIZEWORDS);
     
     // Variaveis de controle
     float numberReads       = 0.0;     // Numero de operacoes de Leitura

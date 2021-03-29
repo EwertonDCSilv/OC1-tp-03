@@ -10,8 +10,8 @@ echo '================================================================='
 echo ''
 
 make
-echo "./bin/main < input.txt > result.txt"
-./bin/main < input.txt > result.txt
+echo "./bin/main < ./test/input/01.in > result.txt"
+./bin/main < ./test/input/01.in > result.txt
 
 echo ''
 echo ''
